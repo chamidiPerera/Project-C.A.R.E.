@@ -5,7 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {colorTheme} from '../theme/Theme';
 
 import WelcomeScreen from '../screens/WelcomeScreen';
-// import SelectUserRole from '../screens/UserRoles';
+import SelectUserRole from '../screens/UserRoles';
 // import DiseasedImageUploadScreen from '../screens/DiseasedImageUploadScreen';
 // import SelectedImages from '../screens/SelectedImages';
 // import DogsOnRoads from '../screens/DogsOnRoads';
@@ -28,17 +28,17 @@ const StackNavigation = () => {
             headerTransparent: true,
           }}
         />
+        <stack.Screen
+          name="ChooseRoleScreen"
+          component={SelectUserRole}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
+            headerTransparent: true,
+          }}
+        />
         {/* <stack.Screen
-            name="ChooseRoleScreen"
-            component={SelectUserRole}
-            options={{
-              headerShown: true,
-              headerTitle: '',
-              headerTintColor: colorTheme.primaryColor,
-              headerTransparent: true,
-            }}
-          />
-          <stack.Screen
             name="DiseasedImageUploadScreen"
             component={DiseasedImageUploadScreen}
             options={{
@@ -47,8 +47,8 @@ const StackNavigation = () => {
               headerTintColor: colorTheme.primaryColor,
               headerTransparent: true,
             }}
-          />
-          <stack.Screen
+          /> */}
+        {/* <stack.Screen
             name="SelectedImagesScreen"
             component={SelectedImages}
             options={{
