@@ -7,7 +7,7 @@ import {colorTheme} from '../theme/Theme';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SelectUserRole from '../screens/UserRoles';
 import DiseasedImageUploadScreen from '../screens/DiseasedImageUploadScreen';
-// import SelectedImages from '../screens/SelectedImages';
+import SelectedImages from '../screens/SelectedImages';
 // import DogsOnRoads from '../screens/DogsOnRoads';
 // import DogsInShelters from '../screens/DogsInShelters';
 // import {Image} from 'react-native';
@@ -48,17 +48,17 @@ const StackNavigation = () => {
             headerTransparent: true,
           }}
         />
-        {/* <stack.Screen
-            name="SelectedImagesScreen"
-            component={SelectedImages}
-            options={{
-              headerShown: true,
-              headerTitle: '',
-              headerTintColor: colorTheme.primaryColor,
-              headerTransparent: true,
-              headerTitleStyle: {fontFamily: 'Lexend-Bold'},
-            }}
-          /> */}
+        <stack.Screen
+          name="SelectedImagesScreen"
+          component={SelectedImages}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
         {/* <stack.Screen
             name="TabNavigator"
             component={TabNavigator}
