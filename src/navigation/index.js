@@ -1,19 +1,19 @@
 import React from 'react';
+import {Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-// import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {colorTheme} from '../theme/Theme';
 
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SelectUserRole from '../screens/UserRoles';
 import DiseasedImageUploadScreen from '../screens/DiseasedImageUploadScreen';
 import SelectedImages from '../screens/SelectedImages';
-// import DogsOnRoads from '../screens/DogsOnRoads';
-// import DogsInShelters from '../screens/DogsInShelters';
-// import {Image} from 'react-native';
+import DogsOnRoads from '../screens/DogsOnRoads';
+import DogsInShelters from '../screens/DogsInShelters';
 
 const stack = createStackNavigator();
-// const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 const StackNavigation = () => {
   return (
@@ -59,53 +59,61 @@ const StackNavigation = () => {
             headerTitleStyle: {fontFamily: 'Lexend-Bold'},
           }}
         />
-        {/* <stack.Screen
-            name="TabNavigator"
-            component={TabNavigator}
-            options={{
-              headerShown: false,
-              // headerTitle: '',
-              // headerTintColor: colorTheme.primaryColor,
-              // headerTransparent: true,
-              // headerTitleStyle: {fontFamily: 'Lexend-Bold'},
-            }}
-          /> */}
+        <stack.Screen
+          name="TabNavigator"
+          component={TabNavigator}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
       </stack.Navigator>
     </NavigationContainer>
   );
 };
 
-// const TabNavigator = () => {
-//   return (
-//     <Tab.Navigator initialRouteName="Shelters">
-//       <Tab.Screen
-//         name="Shelters"
-//         component={DogsInShelters}
-//         options={{
-//           title: 'Shelters',
-//           tabBarIcon: (
-//             <Image
-//               source={require('../images/shelters.png')}
-//               style={{width: 20, height: 20}}
-//             />
-//           ),
-//         }}
-//       />
-//       <Tab.Screen
-//         name="Roads"
-//         component={DogsOnRoads}
-//         options={{
-//           title: 'Streets',
-//           tabBarIcon: (
-//             <Image
-//               source={require('../images/roads.png')}
-//               style={{width: 20, height: 20}}
-//             />
-//           ),
-//         }}
-//       />
-//     </Tab.Navigator>
-//   );
-// };
+const TabNavigator = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName="Shelters"
+      screenOptions={({route}) => ({
+        tabBarActiveTintColor: 'blue',
+        tabBarIcon: ({color, size}) => {
+          let iconSource;
+          if (route.name === 'Shelters') {
+            iconSource = require('../images/shelters.png');
+          } else if (route.name === 'Roads') {
+            iconSource = require('../images/roads.png');
+          }
+          return (
+            <Image
+              source={iconSource}
+              style={{width: size, height: size, tintColor: color}}
+            />
+          );
+        },
+      })}>
+      <Tab.Screen
+        name="Shelters"
+        component={DogsInShelters}
+        options={{
+          title: '',
+          headerTransparent: true,
+        }}
+      />
+      <Tab.Screen
+        name="Roads"
+        component={DogsOnRoads}
+        options={{
+          title: '',
+          headerTransparent: true,
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export default StackNavigation;

@@ -27,9 +27,9 @@ const SelectUserRole = () => {
           />
           <LightButton
             buttonTitle={'Dog Adopter'}
-            // onPressAction={() => {
-            //   navigation.navigate('TabNavigator');
-            // }}
+            onPressAction={() => {
+              navigation.navigate('TabNavigator');
+            }}
           />
           <LightButton buttonTitle={'Dog Shelter'} />
           <LightButton buttonTitle={'Dog Veterinarian'} />

@@ -1,10 +1,11 @@
-import {ImageBackground, StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
-import DarkButton from '../components/DarkButton';
+import {ImageBackground, StyleSheet, Text, View, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {colorTheme, textStyles} from '../theme/Theme';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
 // import Post from '../components/Post';
+import DarkButton from '../components/DarkButton';
 
 const SelectedImages = () => {
   const issubmitClicked = true;
