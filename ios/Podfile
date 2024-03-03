@@ -39,6 +39,9 @@ target 'Care' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # Add CocoaAsyncSocket to your dependencies
+  pod 'CocoaAsyncSocket'
+
   target 'CareTests' do
     inherit! :complete
     # Pods for testing
