@@ -3,6 +3,7 @@ export const colorTheme = {
   secondaryColor: '#D4DEFF',
   black: '#000000',
   white: '#ffffff',
+  gray: '#91a1ab',
 };
 
 export const textStyles = {

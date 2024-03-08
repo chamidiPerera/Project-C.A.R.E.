@@ -1,7 +1,14 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Post from '../components/Post';
-import {textStyles} from '../theme/Theme';
+import {colorTheme, textStyles} from '../theme/Theme';
+import Icon from 'react-native-vector-icons/Entypo';
 
 const DogsInShelters = () => {
   const images = [
@@ -12,17 +19,42 @@ const DogsInShelters = () => {
     },
     {
       source: require('../images/dogImage.png'),
-      location: 'Example Location 2',
+      location: 'Piliyandala',
       distance: '500m',
     },
     {
       source: require('../images/dogImage.png'),
-      location: 'Example Location 2',
+      location: 'Dehiwala',
       distance: '500m',
     },
     {
       source: require('../images/dogImage.png'),
-      location: 'Example Location 2',
+      location: 'Panadura',
+      distance: '500m',
+    },
+    {
+      source: require('../images/dogImage.png'),
+      location: 'Panadura',
+      distance: '500m',
+    },
+    {
+      source: require('../images/dogImage.png'),
+      location: 'Panadura',
+      distance: '500m',
+    },
+    {
+      source: require('../images/dogImage.png'),
+      location: 'Panadura',
+      distance: '500m',
+    },
+    {
+      source: require('../images/dogImage.png'),
+      location: 'Panadura',
+      distance: '500m',
+    },
+    {
+      source: require('../images/dogImage.png'),
+      location: 'Panadura',
       distance: '500m',
     },
   ];
@@ -31,17 +63,31 @@ const DogsInShelters = () => {
     <View style={styles.dogsInSheltersFeed}>
       <View style={styles.spacer}></View>
       <Text style={textStyles.title}>Stray dogs in Dog Shelters</Text>
-      <View style={styles.imageContainer}>
-        {images.map((image, index) => (
-          <View key={index} style={styles.imageWrapper}>
-            <Post
-              imageSource={image.source}
-              location={image.location}
-              distance={image.distance}
-            />
-          </View>
-        ))}
-      </View>
+      <ScrollView>
+        <View style={styles.imageContainer}>
+          {images.map((image, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <Post
+                imageSource={image.source}
+                location={image.location}
+                distance={image.distance}
+              />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+      <TouchableOpacity style={styles.plusButton}>
+        <Icon
+          name="plus"
+          size={30}
+          color={colorTheme.white}
+          backgroundColor={colorTheme.primaryColor}
+          style={{
+            borderRadius: 50,
+            padding: 10,
+          }}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -70,6 +116,11 @@ const styles = StyleSheet.create({
   },
   spacer: {
     padding: 20,
+  },
+  plusButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
 });
 

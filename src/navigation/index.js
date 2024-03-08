@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {colorTheme} from '../theme/Theme';
+import Icons from 'react-native-vector-icons/FontAwesome6';
 
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SelectUserRole from '../screens/UserRoles';
@@ -80,18 +81,19 @@ const TabNavigator = () => {
     <Tab.Navigator
       initialRouteName="Shelters"
       screenOptions={({route}) => ({
-        tabBarActiveTintColor: 'blue',
-        tabBarIcon: ({color, size}) => {
+        tabBarActiveTintColor: colorTheme.primaryColor,
+        tabBarIcon: ({color, focused}) => {
           let iconSource;
           if (route.name === 'Shelters') {
-            iconSource = require('../images/shelters.png');
+            iconSource = 'house';
           } else if (route.name === 'Roads') {
-            iconSource = require('../images/roads.png');
+            iconSource = 'road';
           }
           return (
-            <Image
-              source={iconSource}
-              style={{width: size, height: size, tintColor: color}}
+            <Icons
+              name={iconSource}
+              size={20}
+              color={focused ? colorTheme.primaryColor : colorTheme.gray}
             />
           );
         },
