@@ -12,6 +12,7 @@ import DiseasedImageUploadScreen from '../screens/DiseasedImageUploadScreen';
 import SelectedImages from '../screens/SelectedImages';
 import DogsOnRoads from '../screens/DogsOnRoads';
 import DogsInShelters from '../screens/DogsInShelters';
+import PostingScreen from '../screens/PostingScreen';
 
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,6 +64,17 @@ const StackNavigation = () => {
         <stack.Screen
           name="TabNavigator"
           component={TabNavigator}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
+        <stack.Screen
+          name="PostingScreen"
+          component={PostingScreen}
           options={{
             headerShown: true,
             headerTitle: '',

@@ -8,9 +8,14 @@ import {
 } from 'react-native';
 import Post from '../components/Post';
 import {colorTheme, textStyles} from '../theme/Theme';
-import Icon from 'react-native-vector-icons/Entypo';
+import {useNavigation} from '@react-navigation/native';
 
 const DogsInShelters = () => {
+  const navigation = useNavigation();
+  const navigateToNext = () => {
+    navigation.navigate('PostingScreen');
+  };
+
   const images = [
     {
       source: require('../images/dogImage.png'),
@@ -76,17 +81,8 @@ const DogsInShelters = () => {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.plusButton}>
-        <Icon
-          name="plus"
-          size={30}
-          color={colorTheme.white}
-          backgroundColor={colorTheme.primaryColor}
-          style={{
-            borderRadius: 50,
-            padding: 10,
-          }}
-        />
+      <TouchableOpacity style={styles.plusButton} onPress={navigateToNext}>
+        <Text style={styles.buttonText}>Post about a dog in your shelter</Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,7 +107,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   imageWrapper: {
-    width: '48%', // Adjust as needed to fit two images per row
+    width: '48%',
     marginBottom: 10,
   },
   spacer: {
@@ -119,8 +115,25 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: 'absolute',
+    width: '95%',
+    shadowColor: colorTheme.black, // IOS
+    shadowOffset: {height: 1, width: 1}, // IOS
+    shadowOpacity: 1, // IOS
+    shadowRadius: 1, //IOS
+    elevation: 5, // Android
+    backgroundColor: colorTheme.primaryColor,
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colorTheme.primaryColor,
     bottom: 20,
-    right: 20,
+  },
+  buttonText: {
+    color: colorTheme.white,
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Lexend-Medium',
   },
 });
 
