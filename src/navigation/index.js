@@ -78,7 +78,7 @@ const StackNavigation = () => {
           options={{
             headerShown: true,
             headerTitle: '',
-            headerTintColor: colorTheme.primaryColor,
+            headerTintColor: colorTheme.white,
             headerTransparent: true,
             headerTitleStyle: {fontFamily: 'Lexend-Bold'},
           }}
