@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,10 +13,12 @@ import {useNavigation} from '@react-navigation/native';
 
 const DogsInShelters = () => {
   const navigation = useNavigation();
+  const navigateToDetailScreen = dog => {
+    navigation.navigate('DogDetailScreen', {dog});
+  };
   const navigateToNext = () => {
     navigation.navigate('PostingScreen');
   };
-
   const images = [
     {
       source: require('../images/dogImage.png'),
@@ -70,14 +73,17 @@ const DogsInShelters = () => {
       <Text style={textStyles.title}>Stray dogs in Dog Shelters</Text>
       <ScrollView>
         <View style={styles.imageContainer}>
-          {images.map((image, index) => (
-            <View key={index} style={styles.imageWrapper}>
+          {images.map((dog, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.imageWrapper}
+              onPress={() => navigateToDetailScreen(dog)}>
               <Post
-                imageSource={image.source}
-                location={image.location}
-                distance={image.distance}
+                imageSource={dog.source}
+                location={dog.location}
+                distance={dog.distance}
               />
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>

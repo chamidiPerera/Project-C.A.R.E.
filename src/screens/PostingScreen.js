@@ -6,13 +6,18 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ScrollView,
 } from 'react-native';
 import React from 'react';
 import {colorTheme, textStyles} from '../theme/Theme';
+
 import VerticlSpacer from '../components/VerticlSpacer';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import ColourPicker from '../components/ColourPicker';
 import LightButton from '../components/LightButton';
+import ThreeButtonsRow from '../components/ThreeButtonsRow';
+import DarkButton from '../components/DarkButton';
+import TwoButtonsRow from '../components/TwoButtonRow';
 
 const PostingScreen = () => {
   const [text, onChangeText] = React.useState('Input Additional Information');
@@ -28,67 +33,84 @@ const PostingScreen = () => {
         />
 
         <View style={styles.detailsBox}>
-          <VerticlSpacer />
-          <Text style={textStyles.title}>Tell us about your dog</Text>
-          <Text style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
-            Photo
-          </Text>
-          <TouchableOpacity style={styles.uploadPhotoBox}>
+          <ScrollView>
+            <VerticlSpacer />
+            <Text style={textStyles.title}>Tell us about your dog</Text>
+            <Text
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Is the dog from a shelter or did you find it on the road?
+            </Text>
+            <TwoButtonsRow />
+            <Text
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Photo
+            </Text>
+            <TouchableOpacity style={styles.uploadPhotoBox}>
+              <Text
+                style={[
+                  textStyles.description,
+                  {textAlign: 'left', marginLeft: 10, color: 'gray'},
+                ]}>
+                Upload Photo
+              </Text>
+              <Icon name={'camera'} size={25} color={'gray'} />
+            </TouchableOpacity>
+            <Text
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Additional information
+            </Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeText}
+              placeholder="Input Addition Information Here"
+              multiline={true}
+            />
+            <Text
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Location
+            </Text>
+            <TouchableOpacity style={styles.uploadPhotoBox}>
+              <Text
+                style={[
+                  textStyles.description,
+                  {textAlign: 'left', marginLeft: 10, color: 'gray'},
+                ]}>
+                Select from Map
+              </Text>
+              <Icon name={'location'} size={25} color={'gray'} />
+            </TouchableOpacity>
+            <View style={styles.colourPicker}>
+              <ColourPicker />
+            </View>
+            <Text
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Health Alert
+            </Text>
             <Text
               style={[
                 textStyles.description,
-                {textAlign: 'left', marginLeft: 10, color: 'gray'},
+                { marginTop: 10, textAlign: 'left'},
               ]}>
-              Upload Photo
+              Has any visible health concerns?
             </Text>
-            <Icon name={'camera'} size={25} color={'gray'} />
-          </TouchableOpacity>
-          <Text style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
-            Additional information
-          </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeText}
-            placeholder="Input Addition Information Here"
-          />
-          <Text style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
-            Location
-          </Text>
-          <TouchableOpacity style={styles.uploadPhotoBox}>
+            <TouchableOpacity style={styles.uploadPhotoBox}>
+              <Text
+                style={[
+                  textStyles.description,
+                  {textAlign: 'left', marginLeft: 10, color: 'gray'},
+                ]}>
+                Upload Photo
+              </Text>
+              <Icon name={'camera'} size={25} color={'gray'} />
+            </TouchableOpacity>
             <Text
-              style={[
-                textStyles.description,
-                {textAlign: 'left', marginLeft: 10, color: 'gray'},
-              ]}>
-              Select from Map
+              style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
+              Size
             </Text>
-            <Icon name={'location'} size={25} color={'gray'} />
-          </TouchableOpacity>
-          <View style={styles.colourPicker}>
-            <ColourPicker />
-          </View>
-          <Text style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
-            Health Alert
-          </Text>
-          <TouchableOpacity style={styles.uploadPhotoBox}>
-            <Text
-              style={[
-                textStyles.description,
-                {textAlign: 'left', marginLeft: 10, color: 'gray'},
-              ]}>
-              Upload Photo
-            </Text>
-            <Icon name={'camera'} size={25} color={'gray'} />
-          </TouchableOpacity>
-          <Text style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
-            Size
-          </Text>
-          <View style={styles.sizeButtonGroup}>
-            <LightButton buttonTitle={'Small'} />
-            <LightButton buttonTitle={'Medium'} />
-            <LightButton buttonTitle={'Large'} />
-          </View>
+            <ThreeButtonsRow />
+          </ScrollView>
         </View>
+        <DarkButton isDisabled={true} buttonTitle={'Next'} />
       </ImageBackground>
     </View>
   );
@@ -111,13 +133,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   detailsBox: {
-    height: '80%',
+    height: '85%',
     width: '90%',
     backgroundColor: colorTheme.white,
-    marginTop: 60,
+    marginTop: 50,
     borderRadius: 15,
     elevation: 2,
     shadowColor: colorTheme.black,
+    marginBottom: 10,
   },
   uploadPhotoBox: {
     backgroundColor: '#F5F2F0',
