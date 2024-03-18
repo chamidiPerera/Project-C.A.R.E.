@@ -14,6 +14,7 @@ import DogsOnRoads from '../screens/DogsOnRoads';
 import DogsInShelters from '../screens/DogsInShelters';
 import PostingScreen from '../screens/PostingScreen';
 import DogDetailScreen from '../screens/DogDetailScreen';
+import MapComponent from '../components/MapComponent';
 
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,6 +88,17 @@ const StackNavigation = () => {
         <stack.Screen
           name="DogDetailScreen"
           component={DogDetailScreen}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.white,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
+        <stack.Screen
+          name="MapComponent"
+          component={MapComponent}
           options={{
             headerShown: true,
             headerTitle: '',

@@ -1,26 +1,36 @@
+import React, {useState} from 'react';
 import {
-  Image,
-  ImageBackground,
-  StyleSheet,
+  View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  View,
   ScrollView,
+  ImageBackground,
+  Image,
 } from 'react-native';
-import React from 'react';
-import {colorTheme, textStyles} from '../theme/Theme';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
-import VerticlSpacer from '../components/VerticlSpacer';
 import Icon from 'react-native-vector-icons/EvilIcons';
+import {colorTheme, textStyles} from '../theme/Theme';
+import VerticlSpacer from '../components/VerticlSpacer';
 import ColourPicker from '../components/ColourPicker';
-import LightButton from '../components/LightButton';
 import ThreeButtonsRow from '../components/ThreeButtonsRow';
 import DarkButton from '../components/DarkButton';
 import TwoButtonsRow from '../components/TwoButtonRow';
+import {useNavigation} from '@react-navigation/native';
+import GooglePlacesInput from '../components/SearchLocation';
+import SearchLocationComponent from '../components/SearchLocation';
 
 const PostingScreen = () => {
-  const [text, onChangeText] = React.useState('Input Additional Information');
+  const [text, onChangeText] = useState('Input Additional Information');
+  const [showMap, setShowMap] = useState(false);
+
+  const navigation = useNavigation();
+  const navigateToMap = () => {
+    navigation.navigate('MapComponent');
+  };
+
   return (
     <View style={styles.postingScreen}>
       <ImageBackground
@@ -69,7 +79,10 @@ const PostingScreen = () => {
               style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
               Location
             </Text>
-            <TouchableOpacity style={styles.uploadPhotoBox}>
+            <SearchLocationComponent />
+            <TouchableOpacity
+              style={styles.uploadPhotoBox}
+              onPress={navigateToMap}>
               <Text
                 style={[
                   textStyles.description,
@@ -79,6 +92,7 @@ const PostingScreen = () => {
               </Text>
               <Icon name={'location'} size={25} color={'gray'} />
             </TouchableOpacity>
+
             <View style={styles.colourPicker}>
               <ColourPicker />
             </View>
@@ -89,7 +103,7 @@ const PostingScreen = () => {
             <Text
               style={[
                 textStyles.description,
-                { marginTop: 10, textAlign: 'left'},
+                {marginTop: 10, textAlign: 'left'},
               ]}>
               Has any visible health concerns?
             </Text>
@@ -115,8 +129,6 @@ const PostingScreen = () => {
     </View>
   );
 };
-
-export default PostingScreen;
 
 const styles = StyleSheet.create({
   postingScreen: {
@@ -165,3 +177,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+export default PostingScreen;

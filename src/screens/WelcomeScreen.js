@@ -1,14 +1,95 @@
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {
+  Image,
+  ImageBackground,
+  PermissionsAndroid,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import React, {useState} from 'react';
 import {textStyles} from '../theme/Theme';
+import {useNavigation} from '@react-navigation/native';
+import Geolocation from 'react-native-geolocation-service';
 import DarkButton from '../components/DarkButton';
 import LightButton from '../components/LightButton';
-import {useNavigation} from '@react-navigation/native';
 
 const WelcomeScreen = () => {
+  const [location, setLocation] = useState(false);
   const navigation = useNavigation();
+
   const navigateToNext = () => {
     navigation.navigate('ChooseRoleScreen');
+  };
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Geolocation Permission',
+          message: 'Can we access your location?',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log('granted', granted);
+      if (granted === 'granted') {
+        console.log('You can use Geolocation');
+        return true;
+      } else {
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+    } catch (err) {
+      return err;
+    }
+  };
+
+  const getLocation = () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      console.log('res is:', res);
+      if (res) {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log(position);
+            setLocation(position);
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setLocation(false);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+    console.log(location);
+    locationAccessedToast();
+    navigateToNext();
+  };
+
+  const locationAccessedToast = () => {
+    ToastAndroid.showWithGravityAndOffset(
+      'C.A.R.E. is using your location',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50,
+    );
+  };
+
+  const locationDenyOnPress = () => {
+    ToastAndroid.showWithGravityAndOffset(
+      'Location Permission Denied',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50,
+    );
+    navigateToNext();
   };
 
   return (
@@ -29,9 +110,12 @@ const WelcomeScreen = () => {
         <View style={styles.buttons}>
           <DarkButton
             buttonTitle={'Allow Access'}
-            onPressAction={navigateToNext}
+            onPressAction={getLocation}
           />
-          <LightButton buttonTitle={'Deny Access'} />
+          <LightButton
+            buttonTitle={'Deny Access'}
+            onPressAction={locationDenyOnPress}
+          />
         </View>
         <Image style={styles.wave} source={require('../images/wave.png')} />
       </ImageBackground>
