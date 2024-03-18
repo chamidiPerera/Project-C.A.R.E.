@@ -79,7 +79,7 @@ const PostingScreen = () => {
               style={[textStyles.subtitle, {marginLeft: 20, marginTop: 10}]}>
               Location
             </Text>
-            <SearchLocationComponent />
+            {/* <SearchLocationComponent /> */}
             <TouchableOpacity
               style={styles.uploadPhotoBox}
               onPress={navigateToMap}>
