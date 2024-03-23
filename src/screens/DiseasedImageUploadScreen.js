@@ -6,21 +6,35 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button,
 } from 'react-native';
 import React, {useState} from 'react';
 import {colorTheme, textStyles} from '../theme/Theme';
 import {useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import axios from 'axios';
 
 import LightButton from '../components/LightButton';
 import DarkButton from '../components/DarkButton';
 
 const DiseasedImageUploadScreen = () => {
-  const [selectedPhotos, setSelectedPhotos] = useState([]); // State to track selected photos
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [image, setImage] = useState(null);
+  const [prediction, setPrediction] = useState(null);
 
   const navigation = useNavigation();
   const navigateToNext = () => {
     navigation.navigate('SelectedImagesScreen');
+  };
+  const test = () => {
+    const response = axios
+      .get('http://172.20.10.3:5000/test')
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data: ', error);
+      });
   };
 
   const takePhoto = () => {
@@ -51,10 +65,39 @@ const DiseasedImageUploadScreen = () => {
   const handleImageResponse = response => {
     console.log('Response = ', response);
     if (!response.didCancel) {
-      const newSelectedPhotos = [...selectedPhotos, response.assets[0]];
-      setSelectedPhotos(newSelectedPhotos);
+      // const newSelectedPhotos = [...selectedPhotos, response.assets[0]];
+      setSelectedPhotos(response);
+      uploadImage(response.assets[0]);
     } else {
       console.log('User cancelled image picker');
+    }
+  };
+
+  const uploadImage = async imageData => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageData.uri,
+        type: 'image/jpeg',
+        name: 'image.jpg',
+      });
+
+      const response = await axios.post(
+        'http://172.20.10.3:5000/predict',
+        formData,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      setPrediction(response.data);
+      console.log(prediction);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Error', 'Failed to upload image. Please try again.');
     }
   };
 
@@ -111,6 +154,15 @@ const DiseasedImageUploadScreen = () => {
             </ScrollView>
           </View>
         )}
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          {prediction && (
+            <View style={{marginTop: 20}}>
+              <Text>Predicted Disease:</Text>
+              <Text>{prediction.predicted_class}</Text>
+              <Text>Confidence: {prediction.confidence}</Text>
+            </View>
+          )}
+        </View>
         <View
           style={[
             styles.submitForAnalysisButton,
