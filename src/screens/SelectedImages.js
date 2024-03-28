@@ -87,7 +87,7 @@ const SelectedImages = () => {
             </Text>
           </View>
           <VerticlSpacer />
-          <Text style={textStyles.title}>Predicted Diseases</Text>
+          <Text style={textStyles.title}>Predicted Disease</Text>
           <View style={styles.diseasesResult}>
             <View
               style={[
@@ -105,7 +105,29 @@ const SelectedImages = () => {
               />
             </View>
             <View style={styles.diseaseInformation}>
-              <Text style={styles.diseaseName}>{predictedDiseases}</Text>
+              <Text style={styles.diseaseName}>
+                {predictedDiseases === 'Blepharitis' &&
+                  'Blepharitis (Inflammation of the eyelids)'}
+                {predictedDiseases === 'Conjunctivitis' &&
+                  'Conjunctivitis (Pink eye)'}
+                {predictedDiseases === 'Entropion' &&
+                  'Entropion (Inward rolling of the eyelid)'}
+                {predictedDiseases === 'EyelidTumor' &&
+                  'Eyelid Tumor (Abnormal growth on the eyelid)'}
+                {predictedDiseases === 'HealthyEye' && 'Healthy Eye'}
+                {predictedDiseases === 'Mastopathy' &&
+                  'Mastopathy (Breast disorder)'}
+                {predictedDiseases === 'Nuclear Sclerosis' &&
+                  'Nuclear Sclerosis (Age-related change in the lens of the eye)'}
+                {predictedDiseases === 'Pigmented Keratitis' &&
+                  'Pigmented Keratitis (Inflammation of the cornea with pigment deposits)'}
+                {predictedDiseases === 'circlar alopecia' &&
+                  'Circular Alopecia (Hair loss in circular patterns)'}
+                {predictedDiseases === 'flees' && 'Fleas Infestation'}
+                {predictedDiseases === 'healthy' && 'Healthy Skin'}
+                {predictedDiseases === 'runglong' && 'Runglong (Mange in dogs)'}
+                {predictedDiseases === 'skin lesions' && 'Skin Lesions'}
+              </Text>
               <Text
                 style={[
                   styles.confidenceLevel,
@@ -114,10 +136,11 @@ const SelectedImages = () => {
                       percentageDiseaseConfidence > 60 ? '#5d8ea1' : '#a14c4d',
                   },
                 ]}>
-                Diseases Possibility :{percentageDiseaseConfidence}%
+                Diseases Possibility: {percentageDiseaseConfidence}%
               </Text>
             </View>
           </View>
+
           <Text style={styles.justification}>
             The reason behind ths prediction is
           </Text>
