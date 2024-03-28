@@ -1,56 +1,78 @@
-# backend/app.py
-
 from flask import Flask, request, jsonify
-import numpy as np
 from PIL import Image
-from tensorflow.keras.models import load_model
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+import torch
+from torchvision import transforms
+from io import BytesIO
 
 app = Flask(__name__)
 
-# Load the trained model
-model = load_model('/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/mobileNetV2/detection/MobileNetV2_multi_detect.h5')
-class_names = {
-    0: 'Eye',
-    1: 'Skin',
-}
+# Load the ViT model
+class_names = ['eye', 'skin']
+skin_or_eye_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/detection/pretrained_vit_skinOrEye_final.pth"
+skin_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/skin/pretrained_vit_skin_final.pth"
+eye_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/eye/FinalizedModel/pretrained_vit_eye_final.pth"
+pretrained_vit = torch.load(skin_or_eye_model_path)
+skin_model = torch.load(skin_model_path)
+eye_model = torch.load(eye_model_path)
+pretrained_vit.eval()
+skin_model.eval()
+eye_model.eval()
 
-# Function to preprocess the image
-def preprocess_image(image_path):
-    img = Image.open(image_path)
-    img = img.resize((224, 224))  # Resize image to match model's expected sizing
-    img_array = np.array(img)  # Convert to numpy array
-    img_array = np.expand_dims(img_array, axis=0)  # Expand dimensions to create batch size of 1
-    img_array = preprocess_input(img_array)  # Preprocess the image
-    return img_array
+# Define image transformations
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
 
-# Function to predict the disease
-def predict_disease(image_array, model):
-    predictions = model.predict(image_array)
-    predicted_class = np.argmax(predictions[0])  # Get the index of the predicted class
-    confidence = np.max(predictions[0])  # Get the confidence of the prediction
-    return predicted_class, confidence
+def preprocess_image(image):
+    input_tensor = transform(image).unsqueeze(0)
+    return input_tensor
+
+# Function to predict diseases
+def predict_diseases(image_tensor, model):
+    with torch.no_grad():
+        outputs = model(image_tensor)
+    probabilities = torch.softmax(outputs, dim=1)
+    confidence, predicted_class = torch.max(probabilities, dim=1)
+    return predicted_class.item(), confidence.item()
 
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'image' not in request.files:
-        return jsonify({'error': 'No image found in request'}), 400
+        return jsonify({'error': 'No image sent'}), 400
 
     image_file = request.files['image']
-    image_path = 'temp.jpg'
-    image_file.save(image_path)
+    image = Image.open(BytesIO(image_file.read()))
 
-    try:
-        img_array = preprocess_image(image_path)  # Pass the image path here
-        prediction, confidence = predict_disease(img_array, model)
-        predicted_class = class_names[prediction]
-        result = {
-            'predicted_class': predicted_class,
-            'confidence': float(confidence)
-        }
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    # Preprocess image
+    input_tensor = preprocess_image(image)
+
+    # Predict using the initial ViT model
+    with torch.no_grad():
+        outputs = pretrained_vit(input_tensor)
+        probabilities = torch.softmax(outputs, dim=1)
+        skin_or_eye_confidence, predicted_class = torch.max(probabilities, dim=1)
+
+    _, predicted = torch.max(outputs, 1)
+    predicted_class = class_names[predicted.item()]
+
+    if predicted_class == 'eye':
+        predicted_class_index, confidence = predict_diseases(input_tensor, eye_model)
+        diseases = ['Blepharitis','Conjunctivitis','Entropion','EyelidTumor','HealthyEye','Mastopathy','Nuclear Sclerosis','Pigmented Keratitis']
+    elif predicted_class == 'skin':
+        predicted_class_index, confidence = predict_diseases(input_tensor, skin_model)
+        diseases = ['circlar alopecia','flees','healthy','runglong','skin lesions']
+    else:
+        return jsonify({'error': 'Invalid prediction'}), 400
+
+    predicted_disease = diseases[predicted_class_index]
+
+    # Returning the prediction results
+    return jsonify({'predicted_class': predicted_class, 'predicted_disease': predicted_disease, 'diseases_confidence': confidence, "skin_or_eye_confidence": skin_or_eye_confidence.item()}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5000)

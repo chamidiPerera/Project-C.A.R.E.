@@ -6,7 +6,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button,
 } from 'react-native';
 import React, {useState} from 'react';
 import {colorTheme, textStyles} from '../theme/Theme';
@@ -16,25 +15,21 @@ import axios from 'axios';
 
 import LightButton from '../components/LightButton';
 import DarkButton from '../components/DarkButton';
+import VerticlSpacer from '../components/VerticlSpacer';
 
 const DiseasedImageUploadScreen = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
-  const [image, setImage] = useState(null);
   const [prediction, setPrediction] = useState(null);
 
   const navigation = useNavigation();
   const navigateToNext = () => {
-    navigation.navigate('SelectedImagesScreen');
-  };
-  const test = () => {
-    const response = axios
-      .get('http://172.20.10.3:5000/test')
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching data: ', error);
-      });
+    navigation.navigate('SelectedImagesScreen', { 
+      predictedBodyPart: prediction.predicted_class,
+      bodyPartConfidenceLevel: prediction.skin_or_eye_confidence,
+      predictedDiseases: prediction.predicted_disease,
+      diseaseConfidenceLevel: prediction.diseases_confidence,
+      selectedPicture: selectedPhotos
+    });
   };
 
   const takePhoto = () => {
@@ -66,7 +61,8 @@ const DiseasedImageUploadScreen = () => {
     console.log('Response = ', response);
     if (!response.didCancel) {
       // const newSelectedPhotos = [...selectedPhotos, response.assets[0]];
-      setSelectedPhotos(response);
+      setSelectedPhotos([response.assets[0]]);
+      console.log({selectedPhotos});
       uploadImage(response.assets[0]);
     } else {
       console.log('User cancelled image picker');
@@ -83,7 +79,9 @@ const DiseasedImageUploadScreen = () => {
       });
 
       const response = await axios.post(
-        'http://172.20.10.3:5000/predict',
+        // 'http://10.0.2.2:5000/predict',
+        'http://192.168.199.210:5000/predict',
+        // "http://127.0.0.1:5000/predict",
         formData,
         {
           method: 'POST',
@@ -94,7 +92,7 @@ const DiseasedImageUploadScreen = () => {
       );
 
       setPrediction(response.data);
-      console.log(prediction);
+      console.log({prediction});
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image. Please try again.');
@@ -107,15 +105,24 @@ const DiseasedImageUploadScreen = () => {
         source={require('../images/backgroundDoodle.png')}
         resizeMode="cover"
         style={styles.backrgoundImage}>
-        <Image
-          style={styles.mainImage}
-          source={require('../images/uploadImagesImage.png')}
-        />
+        {selectedPhotos.length == 0 && (
+          <Image
+            style={styles.mainImage}
+            source={require('../images/uploadImagesImage.png')}
+          />
+        )}
+        {selectedPhotos.length > 0 && (
+          <>
+            <VerticlSpacer />
+            <VerticlSpacer />
+            <VerticlSpacer />
+          </>
+        )}
         <Text style={textStyles.title}>
           We need to see your dog's diseased area
         </Text>
         <Text style={textStyles.description}>
-          Take a photo of the area you're concerned about. Make sure it's clear
+          Take a close photo of the area you're concerned about. Make sure it's properly visible
           and well-lit.
         </Text>
         <View style={styles.takePictureButton}>
@@ -155,13 +162,6 @@ const DiseasedImageUploadScreen = () => {
           </View>
         )}
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          {prediction && (
-            <View style={{marginTop: 20}}>
-              <Text>Predicted Disease:</Text>
-              <Text>{prediction.predicted_class}</Text>
-              <Text>Confidence: {prediction.confidence}</Text>
-            </View>
-          )}
         </View>
         <View
           style={[
@@ -169,7 +169,7 @@ const DiseasedImageUploadScreen = () => {
             {marginTop: selectedPhotos.length > 0 ? 10 : '40%'}, // Conditional margin top
           ]}>
           <DarkButton
-            buttonTitle="Next"
+            buttonTitle="Submit for Analysis"
             isDisabled={selectedPhotos.length === 0}
             onPressAction={navigateToNext}
           />
@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   mainImage: {
+    marginTop: 20,
     width: '60%',
     height: '30%',
     alignSelf: 'center',
@@ -224,8 +225,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   selectedPhoto: {
-    width: 150,
-    height: 150,
+    width: 400,
+    height: 400,
     marginRight: 10,
   },
 });

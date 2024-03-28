@@ -1,43 +1,121 @@
-import React from 'react';
-import {ImageBackground, StyleSheet, Text, View, Image} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {colorTheme, textStyles} from '../theme/Theme';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-
-// import Post from '../components/Post';
-import DarkButton from '../components/DarkButton';
+import VerticlSpacer from '../components/VerticlSpacer';
 
 const SelectedImages = () => {
-  const issubmitClicked = true;
+  const route = useRoute();
+
+  const {
+    predictedBodyPart,
+    bodyPartConfidenceLevel,
+    predictedDiseases,
+    diseaseConfidenceLevel,
+    selectedPicture,
+  } = route.params;
+
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsDataLoaded(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const navigation = useNavigation();
+
   const navigateToNext = () => {
     navigation.navigate('SelectedImagesScreen');
   };
 
+  const percentageBodyPartConfidence = Math.trunc(
+    bodyPartConfidenceLevel * 100,
+  );
+
+  const percentageDiseaseConfidence = Math.trunc(diseaseConfidenceLevel * 100);
+
   return (
     <View style={styles.selectedImagesScreen}>
-      <Text style={styles.selectedPhotosText}>2 Photos Selected</Text>
-      <View style={styles.listOfImages}>{/* <Post /> */}</View>
-      <View style={styles.submitForAnalysisButton}>
-        <DarkButton
-          buttonTitle="Submit for Analysis"
-          onPressAction={navigateToNext}
-        />
+      <Text style={styles.selectedPhotosText}>Selected Photo</Text>
+      <View style={styles.listOfImages}>
+        {selectedPicture.map((photo, index) => (
+          <Image
+            key={index}
+            style={styles.selectedPhoto}
+            source={{uri: photo.uri}}
+          />
+        ))}
       </View>
+      <View style={styles.submitForAnalysisButton}></View>
 
-      {issubmitClicked ? (
+      {isDataLoaded ? (
         <>
+          <View style={styles.predictedBodyPartBox}>
+            <Text style={[textStyles.subtitle]}>
+              Predicted Body Part (Skin/Eye) :
+            </Text>
+            {predictedBodyPart == 'eye' ? (
+              <Text style={styles.diseaseName}>Eye</Text>
+            ) : (
+              <Text style={styles.diseaseName}>Skin</Text>
+            )}
+          </View>
+          <View style={styles.predictedBodyPartBox}>
+            {predictedBodyPart == 'eye' ? (
+              <Text style={[textStyles.subtitle]}>
+                Possibility of it being an eye :
+              </Text>
+            ) : (
+              <Text style={[textStyles.subtitle]}>
+                Possibility of it being skin :
+              </Text>
+            )}
+
+            <Text
+              style={[
+                styles.diseaseName,
+                {
+                  color:
+                    percentageDiseaseConfidence > 60 ? '#5d8ea1' : '#ffd4df',
+                },
+              ]}>
+              {percentageBodyPartConfidence}%
+            </Text>
+          </View>
+          <VerticlSpacer />
           <Text style={textStyles.title}>Predicted Diseases</Text>
           <View style={styles.diseasesResult}>
-            <View style={styles.tickBox}>
+            <View
+              style={[
+                styles.tickBox,
+                {
+                  backgroundColor:
+                    percentageDiseaseConfidence > 60
+                      ? colorTheme.secondaryColor
+                      : '#ffd4df',
+                },
+              ]}>
               <Image
                 style={styles.tick}
                 source={require('../images/tick.png')}
               />
             </View>
             <View style={styles.diseaseInformation}>
-              <Text style={styles.diseaseName}>Disease Name</Text>
-              <Text style={styles.confidenceLevel}>Confidence: 90%</Text>
+              <Text style={styles.diseaseName}>{predictedDiseases}</Text>
+              <Text
+                style={[
+                  styles.confidenceLevel,
+                  {
+                    color:
+                      percentageDiseaseConfidence > 60 ? '#5d8ea1' : '#a14c4d',
+                  },
+                ]}>
+                Diseases Possibility :{percentageDiseaseConfidence}%
+              </Text>
             </View>
           </View>
           <Text style={styles.justification}>
@@ -47,6 +125,8 @@ const SelectedImages = () => {
       ) : (
         <SkeletonPlaceholder borderRadius={4}>
           <>
+            <View style={styles.justificationSkeliton}></View>
+            <View style={styles.justificationSkeliton}></View>
             <View style={styles.predictedDiseaseText}></View>
             <View style={styles.diseasesResult}>
               <View style={styles.tickBox}></View>
@@ -78,6 +158,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: '5%',
     borderRadius: 15,
+    padding: 10,
   },
   selectedPhotosText: {
     marginTop: 30,
@@ -95,7 +176,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   tickBox: {
-    backgroundColor: colorTheme.secondaryColor,
     width: 50,
     height: 50,
     alignItems: 'center',
@@ -116,13 +196,12 @@ const styles = StyleSheet.create({
   diseaseName: {
     color: '#000000',
     fontSize: 16,
-    fontFamily: 'Lexend-Medium',
+    fontFamily: 'Lexend-Bold',
     textAlign: 'left',
   },
   confidenceLevel: {
-    color: '#4F8596',
     fontSize: 14,
-    fontFamily: 'Lexend-Regular',
+    fontFamily: 'Lexend-Medium',
     textAlign: 'left',
   },
   justification: {
@@ -143,10 +222,20 @@ const styles = StyleSheet.create({
     height: 30,
     width: '90%',
     alignSelf: 'center',
+    marginBottom: 10,
   },
   predictedDiseaseText: {
     width: '50%',
     height: '20%',
     alignSelf: 'center',
+  },
+  selectedPhoto: {
+    flex: 1,
+  },
+  predictedBodyPartBox: {
+    marginLeft: 20,
+    flexDirection: 'row',
+    width: '90%',
+    justifyContent: 'space-between',
   },
 });
