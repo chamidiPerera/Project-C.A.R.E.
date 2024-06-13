@@ -1,22 +1,13 @@
-import React, {useState} from 'react';
-import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {colorTheme, textStyles} from '../theme/Theme';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { colorTheme, textStyles } from '../theme/Theme';
 
-const TwoButtonsRow = () => {
+const TwoButtonsRow = ({ onSelect }) => {
   const [pressedButton, setPressedButton] = useState(null);
 
-  const handlePress = place => {
-    setPressedButton(place);
-    switch (place) {
-      case 'Shelter':
-        console.log('Shelter button pressed');
-        break;
-      case 'Road':
-        console.log('Road button pressed');
-        break;
-      default:
-        break;
-    }
+  const handlePress = (size) => {
+    setPressedButton(size);
+    onSelect(size);
   };
 
   return (
@@ -26,12 +17,14 @@ const TwoButtonsRow = () => {
         style={[
           styles.button,
           pressedButton === 'Shelter' && styles.pressedButton,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.buttonText,
             pressedButton === 'Shelter' && styles.pressedButtonText,
-          ]}>
+          ]}
+        >
           Shelter
         </Text>
       </TouchableOpacity>
@@ -40,12 +33,14 @@ const TwoButtonsRow = () => {
         style={[
           styles.button,
           pressedButton === 'Road' && styles.pressedButton,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.buttonText,
             pressedButton === 'Road' && styles.pressedButtonText,
-          ]}>
+          ]}
+        >
           Road
         </Text>
       </TouchableOpacity>

@@ -55,7 +55,7 @@ const SearchLocationComponent = () => {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
-          latitude: 7.873054, // Default initial position
+          latitude: 7.873054, 
           longitude: 80.771797,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,

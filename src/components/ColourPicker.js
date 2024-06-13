@@ -1,6 +1,7 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const colours = [
   '#b87a3f',
@@ -12,33 +13,62 @@ const colours = [
   '#ffffff',
 ];
 
-const ColourPicker = () => {
-  const [selectedCircles, setSelectedCircles] = useState([]);
+const ColourPicker = ({onSelect}) => {
+  const [selectedColors, setSelectedColors] = useState([]);
 
-  const toggleSelectCircle = index => {
-    const isSelected = selectedCircles.includes(index);
-    if (isSelected) {
-      setSelectedCircles(selectedCircles.filter(i => i !== index));
-    } else {
-      setSelectedCircles([...selectedCircles, index]);
+  useEffect(() => {
+    fetchSelectedColors();
+  }, []);
+
+  const fetchSelectedColors = async () => {
+    try {
+      const savedColorsString = await AsyncStorage.getItem('selectedColors');
+      if (savedColorsString !== null) {
+        const savedColors = JSON.parse(savedColorsString);
+        setSelectedColors(savedColors);
+      }
+    } catch (error) {
+      console.error('Error fetching selected colors:', error);
     }
   };
 
-  const isSelected = index => {
-    return selectedCircles.includes(index);
+  const saveSelectedColors = async colors => {
+    try {
+      const colorsString = JSON.stringify(colors);
+      await AsyncStorage.setItem('selectedColors', colorsString);
+      console.log('Selected colors saved:', colors);
+    } catch (error) {
+      console.error('Error saving selected colors:', error);
+    }
+  };
+
+  const handleSelectColor = color => {
+    let updatedColors = [];
+    if (selectedColors.includes(color)) {
+      updatedColors = selectedColors.filter(c => c !== color);
+    } else {
+      updatedColors = [...selectedColors, color];
+    }
+    setSelectedColors(updatedColors);
+    saveSelectedColors(updatedColors);
+    onSelect(updatedColors);
+  };
+
+  const isSelected = color => {
+    return selectedColors.includes(color);
   };
 
   return (
-    <View style={styles.ColourPicker}>
+    <View style={styles.colourPicker}>
       {colours.map((color, index) => (
         <TouchableOpacity
           key={index}
           style={[
             styles.circle,
-            {backgroundColor: isSelected(index) ? `${color}80` : color},
+            {backgroundColor: isSelected(color) ? `${color}80` : color},
           ]}
-          onPress={() => toggleSelectCircle(index)}>
-          {isSelected(index) && (
+          onPress={() => handleSelectColor(color)}>
+          {isSelected(color) && (
             <Icon
               name="checkmark"
               size={24}
@@ -52,10 +82,8 @@ const ColourPicker = () => {
   );
 };
 
-export default ColourPicker;
-
 const styles = StyleSheet.create({
-  ColourPicker: {
+  colourPicker: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
@@ -67,9 +95,11 @@ const styles = StyleSheet.create({
     margin: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.3,
+    borderWidth: 2,
   },
   checkIcon: {
     position: 'absolute',
   },
 });
+
+export default ColourPicker;

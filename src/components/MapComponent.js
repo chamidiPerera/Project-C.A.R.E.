@@ -81,7 +81,7 @@ const MapComponent = () => {
 
   const handleOkayButtonPress = () => {
     if (selectedLocation) {
-      // Do something with the selected location
+ 
       Alert.alert(
         'Location Selected',
         `Latitude: ${selectedLocation.latitude}, Longitude: ${selectedLocation.longitude}`,

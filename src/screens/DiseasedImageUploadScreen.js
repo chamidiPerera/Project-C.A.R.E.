@@ -20,6 +20,7 @@ import VerticlSpacer from '../components/VerticlSpacer';
 const DiseasedImageUploadScreen = () => {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [prediction, setPrediction] = useState(null);
+  const [imageDetails, setImageDetails] = useState(null)
 
   const navigation = useNavigation();
   const navigateToNext = () => {
@@ -28,7 +29,9 @@ const DiseasedImageUploadScreen = () => {
       bodyPartConfidenceLevel: prediction.skin_or_eye_confidence,
       predictedDiseases: prediction.predicted_disease,
       diseaseConfidenceLevel: prediction.diseases_confidence,
-      selectedPicture: selectedPhotos
+      selectedPicture: selectedPhotos, 
+      prediction_confidence: prediction.prediction_confidence,
+      imageDetails: imageDetails
     });
   };
 
@@ -60,9 +63,8 @@ const DiseasedImageUploadScreen = () => {
   const handleImageResponse = response => {
     console.log('Response = ', response);
     if (!response.didCancel) {
-      // const newSelectedPhotos = [...selectedPhotos, response.assets[0]];
       setSelectedPhotos([response.assets[0]]);
-      console.log({selectedPhotos});
+      setImageDetails(response.assets[0])
       uploadImage(response.assets[0]);
     } else {
       console.log('User cancelled image picker');
@@ -80,7 +82,7 @@ const DiseasedImageUploadScreen = () => {
 
       const response = await axios.post(
         // 'http://10.0.2.2:5000/predict',
-        'http://192.168.199.210:5000/predict',
+        'http://172.27.19.106:5000/predict', // lucifer
         // "http://127.0.0.1:5000/predict",
         formData,
         {

@@ -15,6 +15,8 @@ import DogsInShelters from '../screens/DogsInShelters';
 import PostingScreen from '../screens/PostingScreen';
 import DogDetailScreen from '../screens/DogDetailScreen';
 import MapComponent from '../components/MapComponent';
+import XAI from '../screens/XAi';
+import InstructionsScreen from '../screens/InstructionsScreen';
 
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -103,6 +105,28 @@ const StackNavigation = () => {
             headerShown: true,
             headerTitle: '',
             headerTintColor: colorTheme.white,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
+        <stack.Screen
+          name="xAIScreen"
+          component={XAI}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
+            headerTransparent: true,
+            headerTitleStyle: {fontFamily: 'Lexend-Bold'},
+          }}
+        />
+        <stack.Screen
+          name="InstructionsScreen"
+          component={InstructionsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerTintColor: colorTheme.primaryColor,
             headerTransparent: true,
             headerTitleStyle: {fontFamily: 'Lexend-Bold'},
           }}

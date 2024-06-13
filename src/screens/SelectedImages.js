@@ -4,6 +4,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {colorTheme, textStyles} from '../theme/Theme';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import VerticlSpacer from '../components/VerticlSpacer';
+import LightButton from '../components/LightButton';
 
 const SelectedImages = () => {
   const route = useRoute();
@@ -14,6 +15,7 @@ const SelectedImages = () => {
     predictedDiseases,
     diseaseConfidenceLevel,
     selectedPicture,
+    imageDetails,
   } = route.params;
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -21,22 +23,26 @@ const SelectedImages = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsDataLoaded(true);
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
 
   const navigation = useNavigation();
 
-  const navigateToNext = () => {
-    navigation.navigate('SelectedImagesScreen');
-  };
-
   const percentageBodyPartConfidence = Math.trunc(
     bodyPartConfidenceLevel * 100,
   );
 
   const percentageDiseaseConfidence = Math.trunc(diseaseConfidenceLevel * 100);
+
+  const navigateToNext = () => {
+    navigation.navigate('xAIScreen', {
+      predictedDiseases: predictedDiseases,
+      imageDetails: imageDetails,
+      selectedPicture: selectedPicture,
+    });
+  };
 
   return (
     <View style={styles.selectedImagesScreen}>
@@ -116,9 +122,9 @@ const SelectedImages = () => {
                   'Eyelid Tumor (Abnormal growth on the eyelid)'}
                 {predictedDiseases === 'HealthyEye' && 'Healthy Eye'}
                 {predictedDiseases === 'Mastopathy' &&
-                  'Mastopathy (Breast disorder)'}
+                  'Mastopathy '}
                 {predictedDiseases === 'Nuclear Sclerosis' &&
-                  'Nuclear Sclerosis (Age-related change in the lens of the eye)'}
+                  'Nuclear Sclerosis (Cloudiness, hardening, and yellowing of the central region of the lens in the eye)'}
                 {predictedDiseases === 'Pigmented Keratitis' &&
                   'Pigmented Keratitis (Inflammation of the cornea with pigment deposits)'}
                 {predictedDiseases === 'circlar alopecia' &&
@@ -141,9 +147,14 @@ const SelectedImages = () => {
             </View>
           </View>
 
-          <Text style={styles.justification}>
+          {/* <Text style={styles.justification}>
             The reason behind ths prediction is
-          </Text>
+          </Text> */}
+          <VerticlSpacer />
+          <LightButton
+            onPressAction={navigateToNext}
+            buttonTitle={'View the most impacted areas'}
+          />
         </>
       ) : (
         <SkeletonPlaceholder borderRadius={4}>

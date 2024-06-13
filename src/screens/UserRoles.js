@@ -31,7 +31,10 @@ const SelectUserRole = () => {
               navigation.navigate('TabNavigator');
             }}
           />
-          <LightButton buttonTitle={'Dog Shelter'} />
+          <LightButton buttonTitle={'Dog Shelter'} 
+          onPressAction={() => {
+            navigation.navigate('PostingScreen')
+          }}/>
           <LightButton buttonTitle={'Dog Veterinarian'} />
           <LightButton buttonTitle={'None of the above'} />
         </View>

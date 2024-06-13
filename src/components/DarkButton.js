@@ -20,11 +20,11 @@ export default DarkButton;
 const styles = StyleSheet.create({
   button: {
     width: '90%',
-    shadowColor: colorTheme.black, // IOS
-    shadowOffset: {height: 1, width: 1}, // IOS
-    shadowOpacity: 1, // IOS
-    shadowRadius: 1, //IOS
-    elevation: 5, // Android
+    shadowColor: colorTheme.black, 
+    shadowOffset: {height: 1, width: 1},
+    shadowOpacity: 1,
+    shadowRadius: 1, 
+    elevation: 5,
     backgroundColor: colorTheme.primaryColor,
     alignSelf: 'center',
     padding: 10,

@@ -1,44 +1,46 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 import torch
-from torchvision import transforms
 from io import BytesIO
+import base64
+import io
+import numpy as np
+import matplotlib.pyplot as plt
+from functions import preprocess_image_prediction, predict_diseases, skin_or_eye_model, class_names, skin_model, eye_model
+from skimage.segmentation import mark_boundaries
+from lime import lime_image
+import matplotlib
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+from going_modular.going_modular.predictions import pred_and_plot_image
+from torchvision import transforms
+from xai import lime_explain_and_predict_image
 
 app = Flask(__name__)
 
-# Load the ViT model
-class_names = ['eye', 'skin']
-skin_or_eye_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/detection/pretrained_vit_skinOrEye_final.pth"
-skin_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/skin/pretrained_vit_skin_final.pth"
-eye_model_path = "/Users/chamidiperera/Documents/FYP Codes/Care/backend/models/vit/eye/FinalizedModel/pretrained_vit_eye_final.pth"
-pretrained_vit = torch.load(skin_or_eye_model_path)
-skin_model = torch.load(skin_model_path)
-eye_model = torch.load(eye_model_path)
-pretrained_vit.eval()
-skin_model.eval()
-eye_model.eval()
 
-# Define image transformations
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    )
-])
-
-def preprocess_image(image):
-    input_tensor = transform(image).unsqueeze(0)
-    return input_tensor
-
-# Function to predict diseases
-def predict_diseases(image_tensor, model):
-    with torch.no_grad():
-        outputs = model(image_tensor)
-    probabilities = torch.softmax(outputs, dim=1)
-    confidence, predicted_class = torch.max(probabilities, dim=1)
-    return predicted_class.item(), confidence.item()
+@app.route('/lime_explanation', methods=['POST'])
+def lime():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image uploaded'}), 400
+    
+    image_file = request.files['image']
+    image = Image.open(image_file)
+    
+    # Path to your saved ViT model
+    saved_model_path = "/Users/chamidiperera/Documents/FYP Codes/savedModels/eye/pretrained_vit_eye_final.pth"
+    
+    # Call the lime_explain_and_predict_image function
+    lime_explanation_image = lime_explain_and_predict_image(saved_model_path, image)
+    
+    # Convert Lime explanation image to base64
+    buffered = io.BytesIO()
+    lime_explanation_image.save(buffered, format="PNG")
+    encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    
+    # Return the base64 encoded Lime explanation image
+    return jsonify({'lime_explanation': encoded_image}), 200
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -49,11 +51,11 @@ def predict():
     image = Image.open(BytesIO(image_file.read()))
 
     # Preprocess image
-    input_tensor = preprocess_image(image)
+    input_tensor = preprocess_image_prediction(image)
 
-    # Predict using the initial ViT model
+    # Predict using the skin or eye model
     with torch.no_grad():
-        outputs = pretrained_vit(input_tensor)
+        outputs = skin_or_eye_model(input_tensor)
         probabilities = torch.softmax(outputs, dim=1)
         skin_or_eye_confidence, predicted_class = torch.max(probabilities, dim=1)
 
@@ -71,8 +73,8 @@ def predict():
 
     predicted_disease = diseases[predicted_class_index]
 
-    # Returning the prediction results
     return jsonify({'predicted_class': predicted_class, 'predicted_disease': predicted_disease, 'diseases_confidence': confidence, "skin_or_eye_confidence": skin_or_eye_confidence.item()}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
